@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "*" : ["@types/*"]
+        },
+        "typeRoots": ["./node_modules/@types", "./types"],
+        "esModuleInterop": true,
+    },
+    "include": [
+        "./types/**/*.d.ts", "types/express/express.d.ts", "types/express/passport.d.ts"
+    ],
+}

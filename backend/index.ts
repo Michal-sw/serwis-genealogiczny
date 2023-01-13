@@ -4,6 +4,7 @@ import connectToMongoDB from './config/mongoClient';
 import logger from './middlewares/logger';
 import passport from './middlewares/passport';
 import corsMiddleware from './middlewares/cors';
+import users from './routes/users';
 
 dotenv.config();
 const port = process.env.PORT || 8080;
@@ -14,6 +15,7 @@ app.use(logger);
 app.use(corsMiddleware);
 app.use(passport.initialize());
 
+app.use("/users", users);
 
 const runApp = async () => {
     await connectToMongoDB()

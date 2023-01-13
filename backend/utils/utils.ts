@@ -1,4 +1,5 @@
 import { readFileSync } from "fs";
+import { sign } from "jsonwebtoken";
 
 export const getPublicKey = (): string => {
   try {
@@ -24,3 +25,23 @@ export const getCookie = (cookies: String, key: string): string => {
   
   return targetCookie?.slice(key.length + 1) || "";
 }
+
+export const getNewTokenPair = (login: String) => {
+  const privateKey = getPrivateKey();
+
+  // The tokens must be paired with the user in the database
+  // 15 minute expire
+  const refreshToken = sign({ login }, privateKey, {
+    expiresIn: 60*15
+  });
+  // 5 minutes expire
+  const token = sign({ login }, privateKey, {
+    expiresIn: 60*5
+  });
+
+  return {
+    refreshToken,
+    token
+  }
+};
+

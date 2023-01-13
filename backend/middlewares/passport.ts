@@ -4,6 +4,7 @@ import passportHttp, { BasicVerifyFunction } from 'passport-http';
 import User, { IUser } from '../config/models/User';
 import { MongooseError } from 'mongoose';
 import { getPrivateKey } from '../utils/utils';
+import { sign } from 'jsonwebtoken';
 
 // passport.initialize();
 // passport.session();
@@ -32,10 +33,7 @@ const validateJwt: VerifyCallback = (jwtPayload, done) => {
         if (err) done(err.message);
         if (user) done(null, user);
     });
-
 }
-
-
 
 const jwtOptions: StrategyOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
