@@ -9,7 +9,6 @@ const dbConnData = {
 }
 
 const connectToMongoDB = () => new Promise(async (resolve, reject) => {
-    console.log(process.env.NO_MONGO);
     if (process.env.NO_MONGO === "true") return resolve("Running without MongoDB!");
     
     let tries = 0;
