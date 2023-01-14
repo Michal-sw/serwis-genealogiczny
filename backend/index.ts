@@ -1,10 +1,13 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
+import { createServer } from 'http';
+
 import connectToMongoDB from './config/mongoClient';
 import logger from './middlewares/logger';
 import passport from './middlewares/passport';
 import corsMiddleware from './middlewares/cors';
 import users from './routes/users';
+import { createWebsocketServer } from './websockets';
 
 dotenv.config();
 const port = process.env.PORT || 8080;
@@ -17,10 +20,13 @@ app.use(passport.initialize());
 
 app.use("/users", users);
 
+const server = createServer(app);
+createWebsocketServer(server);
+
 const runApp = async () => {
     await connectToMongoDB()
         .then(message => {
-            app.listen(port, () => {
+            server.listen(port, () => {
                 console.log(message);
                 console.log(`App listening on ${port}`);
             });
@@ -29,5 +35,5 @@ const runApp = async () => {
             console.log(message);
         });
 }
-  
+
 runApp();
