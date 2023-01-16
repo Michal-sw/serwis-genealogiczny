@@ -1,31 +1,22 @@
 import passport from 'passport';
-import { VerifyCallback, ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
+import { VerifyCallback, ExtractJwt, Strategy, StrategyOptions, JwtFromRequestFunction } from 'passport-jwt';
 import passportHttp, { BasicVerifyFunction } from 'passport-http';
 import User, { IUser } from '../config/models/User';
 import { MongooseError } from 'mongoose';
-import { getPrivateKey } from '../utils/utils';
-import { sign } from 'jsonwebtoken';
+import { getCookie, getPrivateKey } from '../utils/utils';
+import { getUserIfPasswordMatches } from '../services/userService';
 
 // passport.initialize();
 // passport.session();
 
-const validateUser: BasicVerifyFunction = (login, password, done) => {
-    User.findOne({login}, (err: MongooseError, user: IUser | null) => {
-        if (err) {
-            done(err);
-        }
-        if (user) {
-            // if (user.password === HASH(password)) {
-            // dla ułatwienia hasła będą w „plain text” (nie używać „produkcyjnie”!)
-            if (user.password === password) {
-                done(null, user);
-            } else {
-                done(null, null);
-            }
-        } else {
-            done(null, null);
-        }
-    });
+const validateUser: BasicVerifyFunction = async (login, password, done) => {
+    const user = await getUserIfPasswordMatches({ login, password });
+
+    if (user) {
+        done(null, user);
+    } else {
+        done("Credentials invalid", null);
+    }
 };
 
 const validateJwt: VerifyCallback = (jwtPayload, done) => {
@@ -40,7 +31,16 @@ const jwtOptions: StrategyOptions = {
     secretOrKey: getPrivateKey(),
 }
 
-passport.use(new Strategy(jwtOptions, validateJwt));
-passport.use(new passportHttp.BasicStrategy(validateUser));
+const jwtRefreshOptions: StrategyOptions = {
+    jwtFromRequest: ExtractJwt.fromExtractors([(req) => {
+        const cookies = req.headers.cookie || "";
+        return getCookie(cookies, "refreshToken");
+    }]),
+    secretOrKey: getPrivateKey(),
+}
+
+passport.use("jwt", new Strategy(jwtOptions, validateJwt));
+passport.use("jwt-refresh", new Strategy(jwtRefreshOptions, validateJwt));
+passport.use("basic", new passportHttp.BasicStrategy(validateUser));
 
 export default passport;
