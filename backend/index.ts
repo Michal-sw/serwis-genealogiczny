@@ -8,12 +8,14 @@ import passport from './middlewares/passport';
 import corsMiddleware from './middlewares/cors';
 import users from './routes/users';
 import { createWebsocketServer } from './websockets';
+import { json } from 'body-parser';
 
 dotenv.config();
 const port = process.env.PORT || 8080;
 
 const app: Express = express();
 
+app.use(json());
 app.use(logger);
 app.use(corsMiddleware);
 app.use(passport.initialize());

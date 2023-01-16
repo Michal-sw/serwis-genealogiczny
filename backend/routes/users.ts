@@ -1,7 +1,8 @@
-import express, { Router, Request, Response, Express } from "express";
+import express, { Router, Request, Response } from "express";
 import passport from '../middlewares/passport';
 import { getNewTokenPair } from "../utils/utils";
 import { addUser } from '../services/userService';
+import { validateLoginCredentials } from "../middlewares/login";
 
 const router: Router = express.Router({mergeParams: true});
 
@@ -10,7 +11,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), async (req: Requ
     return res.json();
 });
 
-router.post('/login', passport.authenticate('basic', {session: false}), async (req: Request, res: Response) => {
+router.post('/login', validateLoginCredentials, async (req: Request, res: Response) => {
     const user = req.user || { };
 
     const { refreshToken, token } = getNewTokenPair(user.login || "");

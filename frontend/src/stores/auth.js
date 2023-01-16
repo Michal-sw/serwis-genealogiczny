@@ -1,8 +1,8 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { axiosInstance } from '../../services/axiosService';
+import { axiosInstance } from '../services/axiosService';
 
-export const useCounterStore = defineStore('counter', () => {
+export const useAuthStore = defineStore('counter', () => {
   const token = ref("");
   const authenticated = ref(false);
 

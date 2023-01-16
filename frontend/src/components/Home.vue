@@ -1,14 +1,13 @@
 <script setup>
   defineProps({
     msg: {
-      type: String,
-      required: true
+      type: String
     }
   })
 </script>
 
 <template>
-    Hello
+    Hello {{ msg }}
 </template>
 
 <style scoped>

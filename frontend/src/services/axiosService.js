@@ -15,6 +15,7 @@ const axiosInstance = axios.create({
   };
   
   const login = async (values) => {
+    console.log(values);
     return axiosInstance.post(`/users/login`, values);
   };
 
