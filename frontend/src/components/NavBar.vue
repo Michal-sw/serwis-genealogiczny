@@ -8,7 +8,12 @@ import { useAuthStore } from '../stores/auth';
     <header id="navbar">
         <div id="important-buttons-container">
             <RouterLink to="/">Home</RouterLink>
-            
+            <RouterLink
+                v-if="!useAuthStore().authenticated"
+                to="/signin"
+            >
+                <button class="info">Sign in</button>
+            </RouterLink>
             <RouterLink 
                 v-if="!useAuthStore().authenticated" 
                 to="/login"
@@ -41,6 +46,6 @@ import { useAuthStore } from '../stores/auth';
         margin-left: auto;
         display:flex;
         flex-direction: row;
-        gap: 5vw;
+        gap: 2vw;
     }
 </style>

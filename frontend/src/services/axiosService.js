@@ -15,8 +15,11 @@ const refreshToken = async () => {
 };
 
 const login = async (values) => {
-  console.log(values);
   return axiosInstance.post(`/users/login`, values);
+};
+
+const signIn = async (values) => {
+  return axiosInstance.post(`/users/signin`, values);
 };
 
 const logout = async () => {
@@ -27,5 +30,6 @@ export {
     axiosInstance,
     refreshToken,
     login,
+    signIn,
     logout
 };

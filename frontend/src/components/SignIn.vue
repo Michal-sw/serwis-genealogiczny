@@ -1,7 +1,7 @@
 <script setup>
 import { reactive } from 'vue';
 import router from '../router/index';
-import { login } from '../services/axiosService';
+import { signIn } from '../services/axiosService';
 import { useAuthStore } from '../stores/auth';
 import { useNotificationStore } from '../stores/notifications';
 
@@ -10,25 +10,25 @@ const form = reactive({
     password: ""
 });
 
-function onLogin(_event) {
+function onSignIn(_event) {
     _event.preventDefault();
 
-    login({ login: form.login, password: form.password})
+    signIn({ login: form.login, password: form.password})
         .then(res => {
             const token = res.data.token;
             useAuthStore().setToken(token);
-            useNotificationStore().addNotification("Successfully logged in!");
+            useNotificationStore().addNotification("Successfully siggned in!");
             router.push('/');
         })
         .catch(err => {
-            useNotificationStore().addError("Invalid credentials!");
+            useNotificationStore().addError("Invalid data!");
         })
 }
 
 </script>
 
 <template>
-    <h2>Login page</h2>
+    <h2>Sign In</h2>
     <form>
         <div class="formField">
             <label>Login</label>
@@ -38,6 +38,6 @@ function onLogin(_event) {
             <label>Password</label>
             <input v-model="form.password" type="password" id="password"/>
         </div>
-        <button @click="onLogin">Log in</button>
+        <button @click="onSignIn">Sign in</button>
     </form>
 </template>

@@ -21,6 +21,8 @@
 a {
   text-decoration: none;
   color: white;
+  justify-self: center;
+  align-self: center;
 }
 
 a:hover {
@@ -53,3 +55,18 @@ button {
   cursor: pointer;
 }
 
+form {
+  border-radius: 30px;
+  background-color: grey;
+  color: black;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.formField {
+  width: 300px;
+  display: flex;
+  justify-content: space-between;
+}

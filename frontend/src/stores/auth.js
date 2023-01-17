@@ -10,7 +10,6 @@ export const useAuthStore = defineStore('counter', () => {
   function setToken(value) {
     token.value = value
     authenticated.value = true;
-
     axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token.value}`;
   }
 

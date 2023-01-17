@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue';
 import Login from '../components/Login.vue';
+import SignIn from '../components/SignIn.vue';
+
 import { useAuthStore } from '../stores/auth';
 
 const router = createRouter({
@@ -18,6 +20,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/signin',
+      name: 'signin',
+      component: SignIn
     }
   ]
 })
