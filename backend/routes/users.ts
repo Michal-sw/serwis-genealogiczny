@@ -42,7 +42,7 @@ router.post('/signin', async (req: Request, res: Response) => {
     return res.send({ token, result: response.result });
 })
     
-router.get('/logout', (req: Request, res: Response) => {
+router.post('/logout', (req: Request, res: Response) => {
     res.cookie('refreshToken', "", {
       httpOnly: true,
       sameSite: 'strict'

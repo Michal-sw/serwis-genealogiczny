@@ -17,12 +17,12 @@ function onLogin(_event) {
         .then(res => {
             const token = res.data.token;
             useAuthStore().setToken(token);
-            useNotificationStore().addNotification({ message: "Successfully logged in!" });
+            useNotificationStore().addNotification("Successfully logged in!");
             router.push('/');
         })
         .catch(err => {
             console.log(err)
-            useNotificationStore().addError({ message: "Invalid credentials!" });
+            useNotificationStore().addError("Invalid credentials!");
         })
 }
 

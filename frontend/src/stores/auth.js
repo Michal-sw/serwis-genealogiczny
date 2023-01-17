@@ -1,23 +1,28 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { axiosInstance } from '../services/axiosService';
+import { axiosInstance, logout as logoutRequest } from '../services/axiosService';
+import { useNotificationStore } from './notifications'
 
 export const useAuthStore = defineStore('counter', () => {
   const token = ref("");
   const authenticated = ref(false);
 
-  const clearToken = computed(() => token.value = "");
-
   function setToken(value) {
     token.value = value
+    authenticated.value = true;
 
-    axiosInstance.interceptors.request
-      .use(config => {
-        console.log("intercepted");
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token.value}`;
+  }
 
-        return config;
-      }, null);  
-}
+  function logout() {
+    token.value = "";
+    authenticated.value = false;
+    axiosInstance.defaults.headers.common['Authorization'] = "";
 
-  return { token, authenticated, clearToken, setToken };
+    logoutRequest()
+      .then(_res => useNotificationStore().addNotification("You have been logged out!"))
+      .catch(_err => useNotificationStore().addError("Logout unsuccessfull!"));
+  }
+
+  return { token, authenticated, setToken, logout };
 })

@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
 
 </script>
 
@@ -7,7 +8,18 @@ import { RouterLink } from 'vue-router';
     <header id="navbar">
         <div id="important-buttons-container">
             <RouterLink to="/">Home</RouterLink>
-            <RouterLink to="/login">Login</RouterLink>
+            
+            <RouterLink 
+                v-if="!useAuthStore().authenticated" 
+                to="/login"
+            >
+                <button class="green">Login</button>
+            </RouterLink>
+        
+            <button v-else
+                @click="useAuthStore().logout()"
+                class="danger"
+            >Logout</button>
         </div>
     </header>
 </template>
@@ -20,6 +32,9 @@ import { RouterLink } from 'vue-router';
         max-height: 100vh;
         gap: 5vw;
         width: 100%;
+
+        align-items: center;
+        justify-content: center;
     }
 
     #important-buttons-container {

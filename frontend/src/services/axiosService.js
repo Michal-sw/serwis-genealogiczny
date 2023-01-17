@@ -10,17 +10,22 @@ const axiosInstance = axios.create({
     withCredentials: true,
   });
 
-  const refreshToken = async () => {
-    return axiosInstance.post(`/users/refresh`);
-  };
-  
-  const login = async (values) => {
-    console.log(values);
-    return axiosInstance.post(`/users/login`, values);
-  };
+const refreshToken = async () => {
+  return axiosInstance.post(`/users/refresh`);
+};
+
+const login = async (values) => {
+  console.log(values);
+  return axiosInstance.post(`/users/login`, values);
+};
+
+const logout = async () => {
+  return axiosInstance.post(`/users/logout`);
+};
 
 export {
     axiosInstance,
     refreshToken,
-    login
+    login,
+    logout
 };

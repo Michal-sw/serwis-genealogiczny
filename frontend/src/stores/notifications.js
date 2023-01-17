@@ -4,18 +4,24 @@ import { defineStore } from 'pinia'
 export const useNotificationStore = defineStore('notifications', () => {
     const notifications = ref([]);
 
-    function addNotification(notification) {
+    function addNotification(message) {
+        const notification = { message };
         notifications.value = [...notifications.value, notification];
-        
-        setTimeout(() => {
-            notifications.value = notifications.value
-                .filter(e => e.message !== notification.message);
-        }, 5000)
+        removeAfterTimeout(message);
     }
 
-    function addError(notification) {
-        const errorNotification = { message: notification.message, isError: true }
-        addNotification(errorNotification);
+    function addError(message) {
+        const notification = { message, isError: true };
+        notifications.value = [...notifications.value, notification];
+        removeAfterTimeout(message);
+    }
+
+    function removeAfterTimeout(message) {
+        setTimeout(() => {
+            notifications.value = notifications.value
+                .filter(e => e.message !== message);
+        }, 5000)
+
     }
 
   return { notifications, addNotification, addError };
