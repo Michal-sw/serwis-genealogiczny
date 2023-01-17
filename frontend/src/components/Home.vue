@@ -7,7 +7,9 @@
 </script>
 
 <template>
-    Hello {{ msg }}
+    <h2>
+      Hello {{ msg }}
+    </h2>
 </template>
 
 <style scoped>

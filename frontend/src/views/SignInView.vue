@@ -21,7 +21,7 @@ function onSignIn(_event) {
             router.push('/');
         })
         .catch(err => {
-            useNotificationStore().addError("Invalid data!");
+            useNotificationStore().addError("User with this login already exists!");
         })
 }
 

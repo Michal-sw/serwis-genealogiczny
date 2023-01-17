@@ -6,6 +6,9 @@ import { useAuthStore } from '../stores/auth';
 
 <template>
     <header id="navbar">
+        <RouterLink v-if="useAuthStore().authenticated" to="/dashboard">
+            Dashboard
+        </RouterLink>
         <div id="important-buttons-container">
             <RouterLink to="/">Home</RouterLink>
             <RouterLink
@@ -20,7 +23,6 @@ import { useAuthStore } from '../stores/auth';
             >
                 <button class="green">Login</button>
             </RouterLink>
-        
             <button v-else
                 @click="useAuthStore().logout()"
                 class="danger"

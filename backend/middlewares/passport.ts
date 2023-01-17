@@ -8,7 +8,7 @@ import { getCookie, getPrivateKey } from '../utils/utils';
 // passport.session();
 
 const validateJwt: VerifyCallback = (jwtPayload, done) => {
-    User.findOne({login: jwtPayload }, (err: MongooseError, user: IUser | null) => {
+    User.findOne({login: jwtPayload.login }, (err: MongooseError, user: IUser | null) => {
         if (err) done(err.message);
         if (user) done(null, user);
     });

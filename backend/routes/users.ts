@@ -53,7 +53,6 @@ router.post('/logout', (req: Request, res: Response) => {
 
 router.post('/refresh', passport.authenticate('jwt-refresh', {session: false}), (req: Request, res: Response) => {
     const user = req.user || { };
-
     const { refreshToken, token } = getNewTokenPair(user.login || "");
   
     res.cookie('refreshToken', refreshToken, {

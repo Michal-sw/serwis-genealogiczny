@@ -1,7 +1,21 @@
 <script setup>
   import { RouterView } from 'vue-router'
   import NavBar from './components/NavBar.vue';
-import Notifications from './components/Notifications.vue';
+  import Notifications from './components/Notifications.vue';
+  import { onBeforeMount } from 'vue';
+  import { refreshToken } from './services/axiosService';
+  import { useAuthStore } from './stores/auth';
+  
+  onBeforeMount(() => {
+    refreshToken()
+      .then(res => {
+        const token = res.data.token;
+        if (!token) return;
+        useAuthStore().setToken(token);
+      })
+      .catch(err => console.log(err));
+  });
+
 </script>
 
 <template>

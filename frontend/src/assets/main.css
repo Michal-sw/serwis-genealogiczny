@@ -70,3 +70,7 @@ form {
   display: flex;
   justify-content: space-between;
 }
+
+input {
+  font-size: 14px;
+}

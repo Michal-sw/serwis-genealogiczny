@@ -32,7 +32,7 @@ export const getNewTokenPair = (login: String) => {
   // The tokens must be paired with the user in the database
   // 15 minute expire
   const refreshToken = sign({ login }, privateKey, {
-    expiresIn: 60*15
+    expiresIn: 60*60
   });
   // 5 minutes expire
   const token = sign({ login }, privateKey, {

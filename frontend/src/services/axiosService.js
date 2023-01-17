@@ -26,10 +26,16 @@ const logout = async () => {
   return axiosInstance.post(`/users/logout`);
 };
 
+const searchUserByTreeMembers = async (input) => {
+  const inputAsString = input.reduce((prev, curr) => prev ? `${prev},${curr}` : curr, "");
+  return axiosInstance.get(`/users?treeMembers=${inputAsString}`);
+}
+
 export {
     axiosInstance,
     refreshToken,
     login,
     signIn,
-    logout
+    logout,
+    searchUserByTreeMembers
 };
