@@ -1,6 +1,8 @@
 import { MongooseError } from "mongoose";
 import User, { IUser } from "../config/models/User";
 import { LoginDT } from "../types/LoginDT";
+import neoDriver from "../config/neo4jClient";
+import { Neo4jError, Node, Record } from "neo4j-driver";
 
 const getCorrectObject = (result: any) => ({ result, statusCode: 200 })
 const getErrorObject = (statusCode: number, message?: string) => ({ statusCode, result: message })
@@ -11,6 +13,49 @@ export const getUsers = async () => {
         .then((users: [IUser] | any) => getCorrectObject(users))
         .catch((err: MongooseError) => getErrorObject(500, err.message));
 
+    return result;
+}
+
+export const getUsersByTreeMembers = async (treeMembers: string[]) => {
+    const treeMembersString = 
+        "[" + 
+            treeMembers
+            .map(member => `'${member}'`)
+            .toString()
+         + "]";
+    
+    const userIds = await getUserIdsByTreeMembers(treeMembersString)
+    if (userIds.statusCode !== 200) return userIds;
+
+    const result = await User
+        .find({
+            '_id': { $in: userIds.result}
+        })
+        .then((users: [IUser] | any) => getCorrectObject(users))
+        .catch((err: MongooseError) => getErrorObject(500, err.message));
+    
+    return result;
+}
+
+
+const getUserIdsByTreeMembers = async (treeMembersString) => {
+    const session = neoDriver.session();
+    const result = await neoDriver.session()
+        .executeRead(tx =>
+            tx.run(`
+                MATCH (member:TreeMember)-[r:IS_PART_OF]->(userTree:UserTree)
+                WHERE member.name IN ${treeMembersString}
+                RETURN userTree
+            `))
+            .then(res => {
+                const mongoIds: string[] = res.records
+                    .map((record: Record) => record.get('userTree'))
+                    .map((node: Node) => node.properties.mongoID);
+                return getCorrectObject(mongoIds);
+            })
+            .catch((err: Neo4jError) => getErrorObject(500, err.message))
+            .finally(() => session.close());
+    
     return result;
 }
 
@@ -32,8 +77,27 @@ export const addUser = async ({ login, password }: LoginDT) => {
         login,
         password
     })
-    .then((user: IUser) => getCorrectObject(user))
+    .then((user: IUser) => {
+        neo4jAddUser(user._id.toString());
+        return getCorrectObject(user);
+    })
     .catch((err: MongooseError) => getErrorObject(400, err.message));
+
+    return result;
+};
+
+const neo4jAddUser = async (mongoID: string) => {
+    const session = neoDriver.session();
+    const result = await neoDriver.session()
+        .executeWrite(tx =>
+            tx.run(`
+                MERGE (userTree: UserTree {
+                    mongoID: ${mongoID}
+                })
+            `))
+        .then(res => getCorrectObject(""))
+        .catch((err: Neo4jError) => getErrorObject(500, err.message))
+        .finally(() => session.close())
 
     return result;
 };

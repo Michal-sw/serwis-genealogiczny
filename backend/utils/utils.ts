@@ -26,6 +26,11 @@ export const getCookie = (cookies: String, key: string): string => {
   return targetCookie?.slice(key.length + 1) || "";
 }
 
+export const getQueryValueAsArray = (query:string): string[] => {
+  const queryDecoded = decodeURIComponent(query);
+  return queryDecoded.split(',');
+}
+
 export const getNewTokenPair = (login: String) => {
   const privateKey = getPrivateKey();
 

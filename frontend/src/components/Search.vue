@@ -19,7 +19,9 @@ function removeMember(name) {
 }
 
 function onSearch(_event) {
-    searchUserByTreeMembers(treeMembers.value);
+    searchUserByTreeMembers(treeMembers.value)
+        .then(res => console.log(res.data))
+        .catch(err => console.log(err));
     treeMembers.value = [];
 }
 

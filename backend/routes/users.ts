@@ -1,15 +1,33 @@
 import express, { Router, Request, Response } from "express";
 import passport from '../middlewares/passport';
-import { getNewTokenPair } from "../utils/utils";
-import { addUser } from '../services/userService';
+import { getNewTokenPair, getQueryValueAsArray } from "../utils/utils";
+import { addUser, getUsersByTreeMembers, getUsers } from '../services/userService';
 import { validateLoginCredentials } from "../middlewares/login";
 
 const router: Router = express.Router({mergeParams: true});
 
 router.get('/', passport.authenticate('jwt', {session: false}), async (req: Request, res: Response) => {
-    console.log(req.user);
-    return res.json();
+    if (req.query.treeMembers) {
+        return handleTreeMembersQuery(req, res);
+    };
+
+    const response = await getUsers()
+    if (response.statusCode !== 200) {
+        return res.status(response.statusCode).send(response.result);
+    }
+
+    return res.json(response.result);
 });
+
+const handleTreeMembersQuery = async (req: Request, res: Response) => {
+    const treeMembers = getQueryValueAsArray(req.query.treeMembers as string);
+    const response = await getUsersByTreeMembers(treeMembers);
+    if (response.statusCode !== 200) {
+        return res.status(response.statusCode).send(response.result);
+    }
+    console.log(response.result);
+    return res.json(response.result);
+}
 
 router.post('/login', validateLoginCredentials, async (req: Request, res: Response) => {
     const user = req.user || { };
@@ -61,7 +79,7 @@ router.post('/refresh', passport.authenticate('jwt-refresh', {session: false}), 
     });
   
     return res.send({ token });
-  })
+})
   
 
 export default router;
