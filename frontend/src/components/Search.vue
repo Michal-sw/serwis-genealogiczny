@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 import { searchUserByTreeMembers } from '../services/axiosService';
+import UserList from './UserList.vue';
 
 const treeMembers = ref([]);
 const searchInput = ref('');
+const searchResult = ref([]);
 
 function onAdd(_event) {
     const members = treeMembers.value;
@@ -20,7 +22,10 @@ function removeMember(name) {
 
 function onSearch(_event) {
     searchUserByTreeMembers(treeMembers.value)
-        .then(res => console.log(res.data))
+        .then(res => {
+            const users = res.data;
+            searchResult.value = users;
+        })
         .catch(err => console.log(err));
     treeMembers.value = [];
 }
@@ -45,6 +50,8 @@ function onSearch(_event) {
         <button @click="onAdd" class="info">add member</button>
         <button @click="onSearch" class="green">Search</button>
     </div>
+
+    <UserList :users="searchResult"/>
 </template>
 
 <style>

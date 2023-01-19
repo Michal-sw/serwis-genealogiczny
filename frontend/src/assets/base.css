@@ -1,5 +1,12 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
+  --main-color: hsl(180, 22%, 16%);
+  --secondary-color: hsla(155, 60%, 32%);
+  --secondary-color-light: hsla(150, 90%, 45%);
+  --secondary-color-dark: hsla(155, 60%, 25%);
+  --alternate-color: hsla(50, 20%, 45%);
+  --shadow: 0px 0.3px 3px var(--color-background);
+
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
@@ -62,7 +69,7 @@
 body {
   min-height: 100vh;
   color: var(--color-text);
-  background: var(--color-background);
+  background: var(--color-background-soft);
   line-height: 1.6;
   font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
     Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;

@@ -35,17 +35,31 @@ a:hover {
   color: rgb(255, 255, 255);
 }
 
+.green:hover {
+  background-color: #0aa851;
+}
+
 .danger {
   background-color: #b81515;
   color: #fff;
 }
+
+.danger:hover {
+  background-color: #e41d1d;
+}
+
 
 .info {
   background-color: #3187b9;
   color: #fff;
 }
 
+.info:hover{
+  background-color: #3ba7e6;
+}
+
 button {
+  transition: 0.2s;
   padding: 8px 15px;
   border: 1px solid rgb(52, 52, 52);
   color: #333;
@@ -53,6 +67,8 @@ button {
   border-radius: 4px;
   font-size: 14px;
   cursor: pointer;
+
+  box-shadow: var(--shadow);
 }
 
 form {

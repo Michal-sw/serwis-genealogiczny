@@ -38,15 +38,18 @@ export const getUsersByTreeMembers = async (treeMembers: string[]) => {
 }
 
 
-const getUserIdsByTreeMembers = async (treeMembersString) => {
+const getUserIdsByTreeMembers = async (treeMembers: string) => {
     const session = neoDriver.session();
     const result = await neoDriver.session()
         .executeRead(tx =>
-            tx.run(`
-                MATCH (member:TreeMember)-[r:IS_PART_OF]->(userTree:UserTree)
-                WHERE member.name IN ${treeMembersString}
-                RETURN userTree
-            `))
+                tx.run(`
+                    WITH ${treeMembers} AS members
+                    MATCH (userTree:UserTree)<-[:IS_PART_OF]-(m:TreeMember)
+                    WHERE m.name IN members
+                    WITH members, userTree, count(m) AS matches
+                    WHERE matches = size(members)
+                    RETURN userTree;
+                `))
             .then(res => {
                 const mongoIds: string[] = res.records
                     .map((record: Record) => record.get('userTree'))
