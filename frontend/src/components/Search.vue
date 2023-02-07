@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { searchUserByTreeMembers } from '../services/axiosService';
-import UserList from './UserList.vue';
+import UserList from './users/UserList.vue';
 
 const treeMembers = ref([]);
 const searchInput = ref('');

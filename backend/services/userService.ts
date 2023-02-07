@@ -112,6 +112,34 @@ export const getUserById = async (id: string) => {
     return getCorrectObject(user);
 };
 
+export const getUserTreeMembersById = async (mongoId: string) => {
+    const session = neoDriver.session();
+    const result = await neoDriver.session()
+        .executeWrite(tx => {
+                return tx.run(`
+                    MATCH (tree:UserTree) 
+                    WHERE tree.mongoID = "${mongoId}"
+                    WITH tree 
+                    MATCH (tree)<-[:IS_PART_OF]-(member:TreeMember)
+                    RETURN member
+                `)
+            })
+        .then(res => {
+            const members: {name: String, id: String}[] = res.records
+                .map((record: Record) => record.get('member'))
+                .map((node: Node) => ({
+                    name: node.properties.name,
+                    id: node.identity.toString()
+                }));
+            return getCorrectObject(members);
+        })
+        .catch((err: Neo4jError) => getErrorObject(500, err.message))
+        .finally(() => session.close())
+    
+    return result;
+};
+
+
 export const replaceUser = async ({ id, ...body }: {id:string}) => {
     const user = await User.findOneAndReplace({id}, body);
     

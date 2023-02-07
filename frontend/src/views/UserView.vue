@@ -1,14 +1,25 @@
 <script setup>
-import { } from 'vue';
+import UserDetails from '../components/users/UserDetails.vue';
+import UserTree from '../components/users/UserTree.vue';
+import Unauthorized from '../components/Unauthorized.vue';
+import { useAuthStore } from '../stores/auth';
 
 const props = defineProps({
-        id: String
-    });
-
+    id: String
+});
 
 </script>
 
 <template>
-    <h2>User view</h2>
-    <div>ID {{ props.id }}</div>
+    <div v-if="useAuthStore().authenticated">
+        <UserDetails 
+            :id="props.id"
+            :key="useAuthStore().authenticated"
+        />
+        <UserTree
+            :id="props.id"
+            :key="useAuthStore().authenticated"
+        />
+    </div>
+    <Unauthorized v-else/>
 </template>

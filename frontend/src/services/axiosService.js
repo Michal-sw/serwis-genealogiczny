@@ -31,11 +31,21 @@ const searchUserByTreeMembers = async (input) => {
   return axiosInstance.get(`/users?treeMembers=${inputAsString}`);
 }
 
+const getUserById = async (userId) => {
+  return axiosInstance.get(`/users/${userId}`);
+}
+
+const getUserTreeById = async (userId) => {
+  return axiosInstance.get(`/users/${userId}/tree`);
+}
+
 export {
     axiosInstance,
     refreshToken,
     login,
     signIn,
     logout,
-    searchUserByTreeMembers
+    searchUserByTreeMembers,
+    getUserById,
+    getUserTreeById
 };

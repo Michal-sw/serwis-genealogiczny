@@ -1,7 +1,7 @@
 import express, { Router, Request, Response } from "express";
 import passport from '../middlewares/passport';
 import { getNewTokenPair, getQueryValueAsArray } from "../utils/utils";
-import { addUser, getUsersByTreeMembers, getUsers } from '../services/userService';
+import { addUser, getUsersByTreeMembers, getUsers, getUserById, getUserTreeMembersById } from '../services/userService';
 import { validateLoginCredentials } from "../middlewares/login";
 
 const router: Router = express.Router({mergeParams: true});
@@ -25,9 +25,27 @@ const handleTreeMembersQuery = async (req: Request, res: Response) => {
     if (response.statusCode !== 200) {
         return res.status(response.statusCode).send(response.result);
     }
-    console.log(response.result);
+
     return res.json(response.result);
 }
+
+router.get('/:id', passport.authenticate('jwt', {session: false}), async (req: Request, res: Response) => {
+    const response = await getUserById(req.params.id);
+    if (response.statusCode !== 200) {
+        return res.status(response.statusCode).send(response.result);
+    }
+
+    return res.json(response.result);
+});
+
+router.get('/:id/tree', passport.authenticate('jwt', {session: false}), async (req: Request, res: Response) => {
+    const response = await getUserTreeMembersById(req.params.id);
+    if (response.statusCode !== 200) {
+        return res.status(response.statusCode).send(response.result);
+    }
+    return res.json(response.result);
+});
+
 
 router.post('/login', validateLoginCredentials, async (req: Request, res: Response) => {
     const user = req.user || { };
