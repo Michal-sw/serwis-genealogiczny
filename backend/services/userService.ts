@@ -2,7 +2,7 @@ import { MongooseError } from "mongoose";
 import User, { IUser } from "../config/models/User";
 import { LoginDT } from "../types/LoginDT";
 import neoDriver from "../config/neo4jClient";
-import { Neo4jError, Node, Record } from "neo4j-driver";
+import { Neo4jError, Node, Record, Result } from "neo4j-driver";
 
 const getCorrectObject = (result: any) => ({ result, statusCode: 200 })
 const getErrorObject = (statusCode: number, message?: string) => ({ statusCode, result: message })
@@ -80,10 +80,7 @@ export const addUser = async ({ login, password }: LoginDT) => {
         login,
         password
     })
-    .then((user: IUser) => {
-        neo4jAddUser(user._id.toString());
-        return getCorrectObject(user);
-    })
+    .then((user: IUser) => neo4jAddUser(user._id.toString()))
     .catch((err: MongooseError) => getErrorObject(400, err.message));
 
     return result;
@@ -92,13 +89,15 @@ export const addUser = async ({ login, password }: LoginDT) => {
 const neo4jAddUser = async (mongoID: string) => {
     const session = neoDriver.session();
     const result = await neoDriver.session()
-        .executeWrite(tx =>
-            tx.run(`
-                MERGE (userTree: UserTree {
-                    mongoID: ${mongoID}
-                })
-            `))
-        .then(res => getCorrectObject(""))
+        .executeWrite(tx => {
+            console.log("Adding neo user");
+                return tx.run(`
+                    MERGE (userTree: UserTree {
+                        mongoID: "${mongoID}"
+                    })
+                `)
+            })
+        .then(res => getCorrectObject(res))
         .catch((err: Neo4jError) => getErrorObject(500, err.message))
         .finally(() => session.close())
 

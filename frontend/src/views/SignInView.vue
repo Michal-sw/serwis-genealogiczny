@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from 'vue';
+import { reactive, watch } from 'vue';
 import router from '../router/index';
 import { signIn } from '../services/axiosService';
 import { useAuthStore } from '../stores/auth';
@@ -9,6 +9,10 @@ const form = reactive({
     login: "",
     password: ""
 });
+
+watch(() => useAuthStore().authenticated, () => {
+    if (useAuthStore().authenticated) router.push('/dashboard');
+})
 
 function onSignIn(_event) {
     _event.preventDefault();

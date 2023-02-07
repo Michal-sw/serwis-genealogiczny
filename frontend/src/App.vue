@@ -21,7 +21,6 @@
 <template>
     <Notifications />
     <NavBar />
-    
   <main>
     <RouterView/>
   </main>
