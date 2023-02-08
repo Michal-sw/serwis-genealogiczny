@@ -76,14 +76,19 @@ export const addUser = async ({ login, password }: LoginDT) => {
         return getErrorObject(400);
     }
 
-    const result = await User.create({
+    const mongoResult = await User.create({
         login,
         password
     })
-    .then((user: IUser) => neo4jAddUser(user._id.toString()))
+    .then((user: IUser) => getCorrectObject(user))
     .catch((err: MongooseError) => getErrorObject(400, err.message));
+    
+    if (mongoResult.statusCode !== 200) return mongoResult;
+    
+    const neoResult = await neo4jAddUser(mongoResult.result._id.toString())
+    if (neoResult.statusCode !== 200) return neoResult;
 
-    return result;
+    return mongoResult;
 };
 
 const neo4jAddUser = async (mongoID: string) => {

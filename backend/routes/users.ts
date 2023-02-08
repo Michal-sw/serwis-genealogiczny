@@ -57,7 +57,7 @@ router.post('/login', validateLoginCredentials, async (req: Request, res: Respon
         sameSite: 'strict'
       });
   
-    return res.send({ token });
+    return res.send({ token, user });
 });
 
 
@@ -75,7 +75,7 @@ router.post('/signin', async (req: Request, res: Response) => {
         sameSite: 'strict'
     });
     
-    return res.send({ token, result: response.result });
+    return res.send({ token, user: response.result });
 })
     
 router.post('/logout', (req: Request, res: Response) => {
@@ -96,7 +96,7 @@ router.post('/refresh', passport.authenticate('jwt-refresh', {session: false}), 
         sameSite: 'strict',
     });
   
-    return res.send({ token });
+    return res.send({ token, user });
 })
   
 

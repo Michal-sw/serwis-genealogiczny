@@ -1,7 +1,11 @@
+import { ObjectId } from "mongoose"
+
 declare global {
     namespace Express {
         interface User {
-            login?: string
+            _id?: ObjectId,
+            login?: string,
+            password?: string
         }
     }
 }
