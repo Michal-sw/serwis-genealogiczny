@@ -13,9 +13,8 @@ onBeforeMount(() => {
     getUserById(props.id)
         .then(res => {
             user.value = res.data;
-            console.log(user.value);
         })
-        .catch(err => useNotificationStore().addError("Could not get user!"))
+        .catch(_err => useNotificationStore().addError("Could not get user!"))
 })
 
 </script>

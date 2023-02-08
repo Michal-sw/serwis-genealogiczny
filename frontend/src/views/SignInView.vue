@@ -19,8 +19,7 @@ function onSignIn(_event) {
 
     signIn({ login: form.login, password: form.password})
         .then(res => {
-            const token = res.data.token;
-            useAuthStore().setToken(token);
+            useAuthStore().setAuthData(res.data);
             useNotificationStore().addNotification("Successfully siggned in!");
             router.push('/');
         })

@@ -11,7 +11,7 @@
       .then(res => {
         const token = res.data.token;
         if (!token) return;
-        useAuthStore().setToken(token);
+        useAuthStore().setAuthData(res.data);
       })
       .catch(err => console.log(err));
   });
