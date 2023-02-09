@@ -39,22 +39,28 @@ export const getUserTreeMembersById = async (mongoId: string) => {
                 return tx.run(`
                     MATCH (tree:UserTree) WHERE tree.mongoID = "${mongoId}"
                     WITH tree
-                    MATCH (tree)<-[:IS_PART_OF]-(p: TreeMember)
+                    OPTIONAL MATCH (tree)<-[:IS_PART_OF]-(p: TreeMember)
                     OPTIONAL MATCH (p)-[:FATHER|MOTHER]->(p2:TreeMember)
                     WITH p2, collect(p) AS parents
-                    RETURN { node: p2, parents: parents } AS result
+                    OPTIONAL MATCH (p2)-[:FATHER|MOTHER]->(p3:TreeMember)
+                    WITH p2, parents, COLLECT(p3) AS children
+                    RETURN { node: p2, parents: parents, children:children } AS result
                 `)
             })
         .then(res => {
             const members: any[] = res.records
                 .map((record: Record) => record.get("result"))
-                .map((result: { node: Node, parents: Node[]}) => {
+                .map((result: { node: Node, parents: Node[], children: Node[]}) => {
                     return result.node ? ({
                         id: result.node.identity.toString(),
                         props: {...result.node.properties},
                         parents: result.parents.map(parent => ({
                             id: parent.identity.toString(),
                             props: {...parent.properties}
+                        })),
+                        children: result.children.map(child => ({
+                            id: child.identity.toString(),
+                            props: {...child.properties}
                         }))
                     }) : null
                 }).filter(v => v !== null);
