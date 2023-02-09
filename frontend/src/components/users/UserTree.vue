@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { getUserTreeById } from '../../services/axiosService';
 import { useNotificationStore } from '../../stores/notifications';
 import TreeMember from './TreeMember.vue';
@@ -8,80 +8,39 @@ const props = defineProps({
     id: String
 });
 
-const userTree = ref([]);
-
-// userTree = [[...level1], [...level2]]
-
-// 0. const createdNodes = [];
-// 0. const createdChildren = [];
-// 
-// 1. createSiblingsAndSpouse() -> 
-//      Renderuje siblingi i malzonki
-//
-// 2. createChildren() ->
-//      - przechodzi po liscie createdNodes, renderuje ich malzonkow, laczac w pary
-//      - przechodzi po liscie createdNodes i renderuje ich dzieci i dodaje do listy createdChildren 
-//      - dodaje dzieci do listy createdChildren
-//
-// 3. createdNodes = createdChildren 
-// 4. powtorz koło
-
-// Pierwszy node
-// Tworz rodzenstwo i partnerow
-// Tworz dzieci
-// Dla kazdego dziecka tworz partnerow
-// Tworz dzieci
-// Dla kazdego dziecka tworz partnerow
-// ...
-
-// const userTreeNodes = {
-//     firstName,
-//     lastName,
-//     birthDate,
-// 
-//     parents: [],
-// 
-//     siblings: [{
-//         firstName,
-//         lastName,
-//         birthDate,
-//         parents: []
-//         siblings: [recursively render {...}],
-//         children: [recursively render],
-//     }],
-
-//     children: [{
-//         firstName,
-//         lastName,
-//         birthDate,
-//         parents: []
-//         siblings (unused b-coz parent renders them),
-//         children: [recursively render],
-//     }]
-// }
+const parentMap = ref({});
+const rootUser = ref({});
+const rerender = ref(0);
 
 onBeforeMount(() => {
     getUserTreeById(props.id)
         .then(res => {
-            userTree.value = res.data;
+            rootUser.value = res.data.find(v => v.id === "8");
+
+            parentMap.value = res.data.reduce((prev, curr) => {
+                return {
+                    ...prev,
+                    [curr.id]: curr.parents
+                }
+            }, {});
+
+            rerender.value += 1;
         })
         .catch(_err => useNotificationStore().addError("Could not get user tree!"))
 })
+
 
 </script>
 
 <template>
     <h2>User tree</h2>
     <div id="wrapper">
-        <template v-for="(branchLevel, index) in userTree">
-            <TreeMember
-                v-bind:key="memberIndex"
-                v-for="(member, memberIndex) in branchLevel" 
-                :name="member.name"
-                :branch-level="index+1"
-            />
-        </template>
-
+        <TreeMember
+            :key="rootUser.id"
+            v-bind="rootUser"
+            :parentMap="parentMap"
+            :branchLevel="1"
+        />
     </div>
 </template>
 

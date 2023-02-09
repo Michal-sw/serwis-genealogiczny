@@ -1,8 +1,9 @@
 import express, { Router, Request, Response } from "express";
 import passport from '../middlewares/passport';
 import { getNewTokenPair, getQueryValueAsArray } from "../utils/utils";
-import { addUser, getUsersByTreeMembers, getUsers, getUserById, getUserTreeMembersById } from '../services/userService';
+import { addUser, getUsersByTreeMembers, getUsers, getUserById } from '../services/userService';
 import { validateLoginCredentials } from "../middlewares/login";
+import { getUserTreeMembersById } from "../services/neoTreeService";
 
 const router: Router = express.Router({mergeParams: true});
 

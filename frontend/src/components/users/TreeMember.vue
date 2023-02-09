@@ -1,9 +1,20 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
-    name: String
+    id: String,
+    parents: Array,
+    props: {
+        birthDate: Object,
+        name: String
+    },
+    parentMap: Object,
+    branchLevel: Number
 });
+
+const parents = computed(() => {
+    return props?.parentMap[props.id]
+})
 
 const isAddMenuVisible = ref(false);
 
@@ -21,6 +32,7 @@ const vChangeAddMenuVisibility = {
 
 function addMember(relationType) {
     console.log(relationType);
+    console.log(props);
 }
 
 </script>
@@ -28,9 +40,9 @@ function addMember(relationType) {
 <template>
     <span
         v-changeAddMenuVisibility
-        class="tree-member"
+        class="tree-member label"
     >
-        Member {{ props.name }}
+        Member {{ props?.props?.name }}
         <div
             v-if="isAddMenuVisible" 
             id="add-menu-container"
@@ -40,6 +52,24 @@ function addMember(relationType) {
             <button @click="(() => addMember('child'))">Add child</button>
         </div>
     </span>
+
+    <div
+        v-bind:class="`branch lv${props.branchLevel}`"
+    >
+        <div
+            v-bind:key="parent.id"
+            v-for="parent in parents"
+            class="entry"
+        >
+            <TreeMember
+                :key="parent.id"
+                :id="parent.id"
+                :props="{name: parent.props.name, birthDate: parent.props.birthdate}"
+                :parentMap="props.parentMap"
+                :branchLevel="props.branchLevel+1"
+            />
+        </div>
+    </div>
 
 </template>
 
