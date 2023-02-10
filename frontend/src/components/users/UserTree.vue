@@ -44,7 +44,9 @@ function goBackToRoot() {
 <style lang="scss" scoped>
 
 #wrapper {
+
     position: relative;
+    min-height: 200px;
 }
 
 button {

@@ -4,6 +4,7 @@ import { getUserTreeById } from '../services/axiosService';
 
 export const useTreeStore = defineStore('tree', () => {
     const treeOwnerId = ref("");
+    const memberToCopy = ref({});
     const rootMember = ref({});
     const realRootMember = ref({});
     const parentMap = ref({});
@@ -21,6 +22,16 @@ export const useTreeStore = defineStore('tree', () => {
                 setTreeOwnerId(id);
             })
             .catch(err => console.log(err));
+    }
+
+    function performCopy(nodeId) {
+        const values = {
+            source: {...memberToCopy.value},
+            target: {
+                nodeId
+            }
+        }
+        console.log(values);
     }
 
     function refreshTree() {
@@ -60,9 +71,13 @@ export const useTreeStore = defineStore('tree', () => {
         realRootMember.value = newRootMember;
     }
 
+    function setMemberToCopy(member) {
+        memberToCopy.value = member;
+    }
+
     function setTreeOwnerId(id) {
         treeOwnerId.value = id;
     }
 
-    return { getAndSetTree, parentMap, rootChildren, rootMember, realRootMember, treeOwnerId, createChildrenMap, createParentMap, changeRoot, setRealRoot, setTreeOwnerId, refreshTree };
+    return { getAndSetTree, setMemberToCopy, performCopy, memberToCopy, parentMap, rootChildren, rootMember, realRootMember, treeOwnerId, createChildrenMap, createParentMap, changeRoot, setRealRoot, setTreeOwnerId, refreshTree };
 })

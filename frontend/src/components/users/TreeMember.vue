@@ -4,6 +4,7 @@ import { useTreeStore } from '../../stores/tree';
 import { RouterLink } from 'vue-router';
 import { deleteMember } from '../../services/axiosService';
 import { useNotificationStore } from '../../stores/notifications';
+import { useAuthStore } from '../../stores/auth';
 
 const props = defineProps({
     id: String,
@@ -15,6 +16,7 @@ const props = defineProps({
 });
 
 const treeStore = useTreeStore();
+const authStore = useAuthStore();
 
 const parents = computed(() => {
     return treeStore.parentMap[props.id];
@@ -22,6 +24,14 @@ const parents = computed(() => {
 
 const isRoot = computed(() => {
   return props.id === treeStore.realRootMember?.id || props.id === treeStore.rootMember?.id;
+})
+
+const isUserOwner = computed(() => {
+  return treeStore.treeOwnerId === authStore.user?._id;
+})
+
+const isMemberToCopySelected = computed(() => {
+  return treeStore.memberToCopy?.nodeId ? true : false;
 })
 
 const isAddMenuVisible = ref(false);
@@ -58,6 +68,14 @@ function onDelete() {
       .catch(_err => useNotificationStore().addError("Can not delete node!"));
 }
 
+function selectCopyMember() {
+    treeStore.setMemberToCopy({
+      treeOwnerId: treeStore.treeOwnerId,
+      nodeId: props.id
+    })
+    useNotificationStore().addNotification("Selected!");
+}
+
 </script>
 
 <template>
@@ -76,6 +94,20 @@ function onDelete() {
             >
                 <button class="green">Add relation</button>
             </RouterLink>
+
+            <button class="green" 
+              v-if="!isUserOwner" @click="selectCopyMember"
+            >
+              Select for copy
+            </button>
+
+            <button class="green" 
+              v-else-if="isMemberToCopySelected" 
+              @click="(() => useTreeStore().performCopy(props.id))"
+            >
+              Perform copy!
+            </button>
+            
             <button v-if="!isRoot" class="danger" @click="onDelete">Delete node</button>
         </div>
     </span>
