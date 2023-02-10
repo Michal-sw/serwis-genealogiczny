@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue';
 import LoginView from '../views/LoginView.vue';
 import SignInView from '../views/SignInView.vue';
 import UserView from '../views/UserView.vue';
+import AddMemberView from '../views/AddMemberView.vue';
 import DashboardView from '../views/DashboardView.vue';
 
 import { useAuthStore } from '../stores/auth';
@@ -43,6 +44,12 @@ const router = createRouter({
       path: '/users/:id',
       name: 'user',
       component: UserView,
+      props: true,
+    },
+    {
+      path: '/members/merge/:id',
+      name: 'addTreeMember',
+      component: AddMemberView,
       props: true,
     },
   ]

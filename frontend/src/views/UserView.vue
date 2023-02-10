@@ -11,7 +11,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div v-if="useAuthStore().authenticated">
+    <div class="user-view-wrapper" v-if="useAuthStore().authenticated">
         <UserDetails 
             :id="props.id"
             :key="useAuthStore().authenticated"
@@ -23,3 +23,11 @@ const props = defineProps({
     </div>
     <Unauthorized v-else/>
 </template>
+
+<style>
+
+.user-view-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+</style>

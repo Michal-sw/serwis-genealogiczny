@@ -1,10 +1,13 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useTreeStore } from '../../stores/tree';
+import { RouterLink } from 'vue-router';
+import { deleteMember } from '../../services/axiosService';
+import router from '../../router';
+import { useNotificationStore } from '../../stores/notifications';
 
 const props = defineProps({
     id: String,
-    parents: Array,
     props: {
         birthDate: Object,
         name: String
@@ -14,6 +17,10 @@ const props = defineProps({
 
 const parents = computed(() => {
     return useTreeStore().parentMap[props.id];
+})
+
+const isRoot = computed(() => {
+  return props.id === useTreeStore().realRootMember?.id
 })
 
 const isAddMenuVisible = ref(false);
@@ -30,17 +37,21 @@ const vChangeAddMenuVisibility = {
     }
 };
 
-function addMember(relationType) {
-    console.log(relationType);
-    console.log(props);
-}
-
 function setAsRoot() {
     useTreeStore().changeRoot({
         id: props.id,
         parents: props.parents,
         props: props.props,
     });
+}
+
+function onDelete() {
+    const isSure = confirm("Are you sure?");
+    const isRoot = props.id === useTreeStore().realRootMember?.id
+    if (!isSure || isRoot) return;
+    deleteMember(useTreeStore().treeOwnerId, props.id)
+      .then(_res => router.go(0))
+      .catch(_err => useNotificationStore().addError("Can not delete node!"));
 }
 
 </script>
@@ -56,8 +67,12 @@ function setAsRoot() {
             class="add-menu-container"
         >
             <button @click="setAsRoot">Set as root</button>
-            <button @click="(() => addMember('parent'))">Add parent</button>
-            <button @click="(() => addMember('child'))">Add child</button>
+            <RouterLink
+                :to="{ name: 'addTreeMember', params: { id: props.id },  }"
+            >
+                <button class="green">Add relation</button>
+            </RouterLink>
+            <button v-if="!isRoot" class="danger" @click="onDelete">Delete node</button>
         </div>
     </span>
 

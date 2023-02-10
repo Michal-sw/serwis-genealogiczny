@@ -1,39 +1,29 @@
 <script setup>
-import { ref } from 'vue';
-import { useTreeStore } from '../../stores/tree';
 import { storeToRefs } from 'pinia';
+import Child from './Child.vue' 
+import { useTreeStore } from '../../stores/tree';
 
 const { rootChildren } = storeToRefs(useTreeStore());
-const isChildMenuVisible = ref(false);
-
-function setAsRoot(newRoot) {
-    useTreeStore().changeRoot(newRoot);
-}
 
 </script>
 
 <template>
     <div id="children-menu">
         <h3>Children</h3>
-        <div
+        <Child
             v-bind:key="child.id"
             v-for="child in rootChildren"
-            @click="() => isChildMenuVisible = !isChildMenuVisible"
-        >
-            <span v-changeAddMenuVisibility class="tree-member">
-                {{ child.props.name }}
-            </span>
-            <div
-                v-if="isChildMenuVisible" 
-                id="child-menu-container"
-            >
-            <button @click="(() => setAsRoot(child))">Set as root</button>
-         </div>
-        </div>
+            :child="child"
+        />
     </div>
 </template>
 
 <style lang="scss" scoped>
-
+    #children-menu {
+        display:flex;
+        flex-direction: column;
+        gap:10px;
+        width: fit-content;
+    }
 
 </style>

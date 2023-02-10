@@ -3,7 +3,7 @@ import passport from '../middlewares/passport';
 import { getNewTokenPair, getQueryValueAsArray } from "../utils/utils";
 import { addUser, getUsersByTreeMembers, getUsers, getUserById } from '../services/userService';
 import { validateLoginCredentials } from "../middlewares/login";
-import { getUserTreeMembersById } from "../services/neoTreeService";
+import { addChild, addParent, getUserTreeMembersById, deleteTreeMember } from "../services/neoTreeService";
 
 const router: Router = express.Router({mergeParams: true});
 
@@ -99,6 +99,36 @@ router.post('/refresh', passport.authenticate('jwt-refresh', {session: false}), 
   
     return res.send({ token, user });
 })
-  
+
+router.post('/:id/tree/add', passport.authenticate('jwt', {session: false}), async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const mergeToId = req.body.mergeToId;
+    const newMember = req.body.newMember;
+    const relationType = req.body.relationType;
+    const isChild = req.body.isChild;
+    const isNewRoot = req.body.isNewRoot;
+
+    const response = isChild
+        ? await addChild(id, isNewRoot, {mergeToId, newMember , relationType})
+        : await addParent(id, {mergeToId, newMember , relationType});
+
+    if (response.statusCode !== 200) {
+        return res.status(response.statusCode).send(response.result);
+    }
+    return res.json(response.result);
+})
+
+router.delete('/:id/tree/:memberId', passport.authenticate('jwt', {session: false}), async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const memberId = req.params.memberId;
+
+    const response = await deleteTreeMember(id, memberId);
+
+    if (response.statusCode !== 200) {
+        return res.status(response.statusCode).send(response.result);
+    }
+    return res.json(response.result);
+
+})
 
 export default router;

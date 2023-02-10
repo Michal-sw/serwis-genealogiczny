@@ -39,6 +39,14 @@ const getUserTreeById = async (userId) => {
   return axiosInstance.get(`/users/${userId}/tree`);
 }
 
+const addTreeRelation = async (userId, values) => {
+  return axiosInstance.post(`/users/${userId}/tree/add`, values);
+}
+
+const deleteMember = async (userId, memberId) => {
+  return axiosInstance.delete(`/users/${userId}/tree/${memberId}`);
+}
+
 export {
     axiosInstance,
     refreshToken,
@@ -47,5 +55,7 @@ export {
     logout,
     searchUserByTreeMembers,
     getUserById,
-    getUserTreeById
+    getUserTreeById,
+    addTreeRelation,
+    deleteMember
 };

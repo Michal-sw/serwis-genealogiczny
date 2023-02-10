@@ -5,23 +5,26 @@ const getCorrectObject = (result: any) => ({ result, statusCode: 200 })
 const getErrorObject = (statusCode: number, message?: string) => ({ statusCode, result: message })
 
 interface addTreeMemberParams {
-    mergeTo: any;
-    newMember: any;
-    relationType: any;
+    mergeToId: String;
+    newMember: {
+        name: String,
+        birthDate: Date 
+    };
+    relationType: String;
 }
 
-export const addTreeMember = async (userId: string, {mergeTo, newMember, relationType}: addTreeMemberParams) => {
+export const addParent = async (userId: string, {mergeToId, newMember, relationType}: addTreeMemberParams) => {
     const session = neoDriver.session();
     const result = await neoDriver.session()
         .executeWrite(tx =>
                 tx.run(`
-                    MATCH (n:UserTree) 
-                    WHERE n.mongoID = "${userId}"
-                    WITH n 
-                    MATCH (n)<-[:IS_PART_OF]-(member:TreeMember)
-                    WHERE member.name = "${mergeTo.name}" AND member.birthDate = datetime(${mergeTo.birthDate})
-                    WITH n, member
-                    MERGE (member)-[:${relationType}]->(s:TreeMember {name: "${newMember.name}", birthDate: datetime(${newMember.birthDate})})-[:IS_PART_OF]->(n)
+                    MATCH (tree:UserTree) 
+                    WHERE tree.mongoID = "${userId}"
+                    WITH tree
+                    MATCH (tree)<-[:IS_PART_OF]-(mergeTo:TreeMember)
+                    WHERE id(mergeTo) = ${mergeToId}
+                    WITH tree, mergeTo
+                    MERGE (mergeTo)<-[:${relationType}]-(newMember:TreeMember {name: "${newMember.name}", birthDate: datetime("${newMember.birthDate}")})-[:IS_PART_OF]->(tree)
                 `))
             .then(res => {
                 return getCorrectObject(res);
@@ -32,6 +35,71 @@ export const addTreeMember = async (userId: string, {mergeTo, newMember, relatio
     return result;
 } 
 
+export const addChild = async (userId: string, isNewRoot: boolean, {mergeToId, newMember, relationType}: addTreeMemberParams) => {
+    if (isNewRoot) {
+        await removeRoot(userId);
+    }
+    const session = neoDriver.session();
+    const result = await neoDriver.session()
+        .executeWrite(tx =>
+                tx.run(`
+                    MATCH (tree:UserTree) 
+                    WHERE tree.mongoID = "${userId}"
+                    WITH tree
+                    MATCH (tree)<-[:IS_PART_OF]-(mergeTo:TreeMember)
+                    WHERE id(mergeTo) = ${mergeToId}
+                    WITH tree, mergeTo
+                    MERGE (mergeTo)-[:${relationType}]->(newMember:TreeMember { root: ${isNewRoot}, name: "${newMember.name}", birthDate: datetime("${newMember.birthDate}")})-[:IS_PART_OF]->(tree)
+                `))
+            .then(res => {
+                return getCorrectObject(res);
+            })
+            .catch((err: Neo4jError) => getErrorObject(500, err.message))
+            .finally(() => session.close());
+    
+    return result;
+} 
+
+const removeRoot = async (userId: String) => {
+    const session = neoDriver.session();
+    const result = await neoDriver.session()
+        .executeWrite(tx =>
+            tx.run(`
+                MATCH (tree:UserTree) 
+                WHERE tree.mongoID = "${userId}"
+                WITH tree
+                MATCH (tree)<-[:IS_PART_OF]-(mergeTo:TreeMember)
+                WHERE mergeTo.root = true
+                SET mergeTo.root = false
+            `))
+            .then(res => {
+                return getCorrectObject(res);
+            })
+            .catch((err: Neo4jError) => getErrorObject(500, err.message))
+            .finally(() => session.close());
+    return result
+}
+
+export const deleteTreeMember = async (userId:String, memberId: String) => {
+    const session = neoDriver.session();
+    const result = await neoDriver.session()
+        .executeWrite(tx =>
+            tx.run(`
+                MATCH (tree:UserTree) 
+                WHERE tree.mongoID = "${userId}"
+                WITH tree
+                MATCH (tree)<-[:IS_PART_OF]-(member:TreeMember)
+                WHERE id(member) = ${memberId}
+                DETACH DELETE member
+            `))
+            .then(res => {
+                return getCorrectObject(res);
+            })
+            .catch((err: Neo4jError) => getErrorObject(500, err.message))
+            .finally(() => session.close());
+    return result   
+}
+
 export const getUserTreeMembersById = async (mongoId: string) => {
     const session = neoDriver.session();
     const result = await neoDriver.session()
@@ -39,7 +107,7 @@ export const getUserTreeMembersById = async (mongoId: string) => {
                 return tx.run(`
                     MATCH (tree:UserTree) WHERE tree.mongoID = "${mongoId}"
                     WITH tree
-                    OPTIONAL MATCH (tree)<-[:IS_PART_OF]-(p: TreeMember)
+                    MATCH (tree)<-[:IS_PART_OF]-(p: TreeMember)
                     OPTIONAL MATCH (p)-[:FATHER|MOTHER]->(p2:TreeMember)
                     WITH p2, collect(p) AS parents
                     OPTIONAL MATCH (p2)-[:FATHER|MOTHER]->(p3:TreeMember)
@@ -65,7 +133,6 @@ export const getUserTreeMembersById = async (mongoId: string) => {
                     }) : null
                 }).filter(v => v !== null);
 
-            console.log(members);
             return getCorrectObject(members);
         })
         .catch((err: Neo4jError) => getErrorObject(500, err.message))
