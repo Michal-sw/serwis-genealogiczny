@@ -4,12 +4,11 @@ import { useTreeStore } from '../../stores/tree';
 import TreeMember from './TreeMember.vue';
 import RootChildren from './RootChildren.vue';
 import { storeToRefs } from 'pinia';
+import { RouterLink } from 'vue-router';
 
 const props = defineProps({
     id: String
 });
-
-// const rerender = ref(0);
 
 const { rootMember, realRootMember } = storeToRefs(useTreeStore());
 
@@ -25,8 +24,13 @@ function goBackToRoot() {
 
 <template>
     <h2>User tree</h2>
-    <button class="info" @click="goBackToRoot">Go back to true Root</button>
-    <div id="wrapper">
+    <button v-if="rootMember?.id" class="info" @click="goBackToRoot">Go back to true Root</button>
+    <div v-if="!rootMember?.id">
+            <RouterLink :to="{ name: 'addRootMember', params: { id: props.id } }">
+                <button class="green">Add Root</button>
+            </RouterLink>
+    </div>
+    <div id="wrapper" v-else>
         <TreeMember
             :key="rootMember?.id"
             :id="rootMember?.id"

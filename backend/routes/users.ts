@@ -3,7 +3,7 @@ import passport from '../middlewares/passport';
 import { getNewTokenPair, getQueryValueAsArray } from "../utils/utils";
 import { addUser, getUsersByTreeMembers, getUsers, getUserById } from '../services/userService';
 import { validateLoginCredentials } from "../middlewares/login";
-import { addChild, addParent, getUserTreeMembersById, deleteTreeMember } from "../services/neoTreeService";
+import { addChild, addRoot, addParent, getUserTreeMembersById, deleteTreeMember } from "../services/neoTreeService";
 
 const router: Router = express.Router({mergeParams: true});
 
@@ -117,6 +117,19 @@ router.post('/:id/tree/add', passport.authenticate('jwt', {session: false}), asy
     }
     return res.json(response.result);
 })
+
+router.post('/:id/tree/root', passport.authenticate('jwt', {session: false}), async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const newMember = req.body;
+
+    const response = await addRoot(id, newMember);
+    if (response.statusCode !== 200) {
+        return res.status(response.statusCode).send(response.result);
+    }
+    return res.json(response.result);
+
+})
+
 
 router.delete('/:id/tree/:memberId', passport.authenticate('jwt', {session: false}), async (req: Request, res: Response) => {
     const id = req.params.id;

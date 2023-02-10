@@ -5,6 +5,7 @@
   import { onBeforeMount } from 'vue';
   import { refreshToken } from './services/axiosService';
   import { useAuthStore } from './stores/auth';
+import { useChatStore } from './stores/chat';
   
   onBeforeMount(() => {
     refreshToken()
@@ -16,6 +17,9 @@
       .catch(err => console.log(err));
   });
 
+  onBeforeMount(() => {
+    useChatStore().initWebsocket();
+  })
 </script>
 
 <template>

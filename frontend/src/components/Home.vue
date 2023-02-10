@@ -11,6 +11,7 @@ const { user, authenticated } = storeToRefs(useAuthStore());
     <h2>
       Hello {{ user.login }}
       <UserTree 
+        v-if="authenticated"
         :id="user._id"
         :key="authenticated"
       />

@@ -60,6 +60,25 @@ export const addChild = async (userId: string, isNewRoot: boolean, {mergeToId, n
     return result;
 } 
 
+export const addRoot = async (userId: string, newRoot: {name:String, birthDate:String}) => {
+    const session = neoDriver.session();
+    const result = await neoDriver.session()
+        .executeWrite(tx =>
+                tx.run(`
+                    MATCH (tree:UserTree) 
+                    WHERE tree.mongoID = "${userId}"
+                    WITH tree
+                    MERGE (tree)<-[:IS_PART_OF]-(newRoot:TreeMember { name: ${newRoot.name}, birthDate: datetime("${newRoot.birthDate}", isRoot: true)})
+                `))
+            .then(res => {
+                return getCorrectObject(res);
+            })
+            .catch((err: Neo4jError) => getErrorObject(500, err.message))
+            .finally(() => session.close());
+    
+    return result;
+} 
+
 const removeRoot = async (userId: String) => {
     const session = neoDriver.session();
     const result = await neoDriver.session()

@@ -47,6 +47,11 @@ const addTreeRelation = async (userId, values) => {
   return axiosInstance.post(`/users/${userId}/tree/add`, values);
 }
 
+const addRoot = async (userId, values) => {
+  return axiosInstance.post(`/users/${userId}/tree/root`, values);
+}
+
+
 const deleteMember = async (userId, memberId) => {
   return axiosInstance.delete(`/users/${userId}/tree/${memberId}`);
 }
@@ -62,5 +67,6 @@ export {
     getUserById,
     getUserTreeById,
     addTreeRelation,
-    deleteMember
+    deleteMember,
+    addRoot
 };

@@ -1,6 +1,6 @@
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 
 export interface MessageDT {
     text: string;
-    author: ObjectId;
+    author: Types.ObjectId;
 }
