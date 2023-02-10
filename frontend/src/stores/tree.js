@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { getUserTreeById } from '../services/axiosService';
+import { getUserTreeById, performCopy as performCopyRequest } from '../services/axiosService';
+import { useAuthStore } from './auth';
 
 export const useTreeStore = defineStore('tree', () => {
     const treeOwnerId = ref("");
@@ -31,7 +32,10 @@ export const useTreeStore = defineStore('tree', () => {
                 nodeId
             }
         }
-        console.log(values);
+        performCopyRequest(useAuthStore().user._id ,values)
+            .then(() => {
+                refreshTree();
+            })
     }
 
     function refreshTree() {

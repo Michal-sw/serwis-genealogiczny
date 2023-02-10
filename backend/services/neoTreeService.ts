@@ -94,7 +94,7 @@ export const performCopy = async (userId: String, treeOwnerId: String, sourceNod
                     WITH sourceNode, targetNode, COLLECT(path) as paths
                     CALL apoc.refactor.cloneSubgraphFromPaths(paths, {
                         standinNodes: [[sourceNode, targetNode]]
-                    }
+                    })
                     YIELD input, output, error
                     MERGE (output)-[:IS_PART_OF]->(tree: UserTree { mongoID: "${userId}" })
                     RETURN output
@@ -187,11 +187,9 @@ export const getUserTreeMembersById = async (mongoId: string) => {
                     }
                 })
             
-                console.log(members);
             const filteredMembers = members.length > 1 
                 ? members.filter(v => !v.isFromNull)
                 : members;
-                console.log(filteredMembers);
 
             return getCorrectObject(filteredMembers);
         })

@@ -31,10 +31,8 @@ function onSubmit(event) {
 
     const userId = props.id;
 
-    console.log(values);
     addRoot(userId, values)
         .then(res => {
-            console.log(res);
             router.go(-1);
         })
         .catch(_err => useNotificationStore().addError("Something went wrong..."));

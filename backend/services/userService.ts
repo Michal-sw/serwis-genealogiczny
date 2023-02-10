@@ -95,7 +95,6 @@ const neo4jAddUser = async (mongoID: string) => {
     const session = neoDriver.session();
     const result = await neoDriver.session()
         .executeWrite(tx => {
-            console.log("Adding neo user");
                 return tx.run(`
                     MERGE (userTree: UserTree {
                         mongoID: "${mongoID}"

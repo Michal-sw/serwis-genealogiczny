@@ -41,10 +41,8 @@ function onSubmit(event) {
 
     const userId = useTreeStore().treeOwnerId;
 
-    console.log(values);
     addTreeRelation(userId, values)
         .then(res => {
-            console.log(res);
             router.go(-1);
         })
         .catch(_err => useNotificationStore().addError("Something went wrong..."));

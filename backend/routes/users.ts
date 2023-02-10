@@ -3,7 +3,7 @@ import passport from '../middlewares/passport';
 import { getNewTokenPair, getQueryValueAsArray } from "../utils/utils";
 import { addUser, getUsersByTreeMembers, getUsers, getUserById } from '../services/userService';
 import { validateLoginCredentials } from "../middlewares/login";
-import { addChild, addRoot, addParent, getUserTreeMembersById, deleteTreeMember } from "../services/neoTreeService";
+import { addChild, addRoot, addParent, getUserTreeMembersById, deleteTreeMember, performCopy } from "../services/neoTreeService";
 
 const router: Router = express.Router({mergeParams: true});
 
@@ -124,7 +124,6 @@ router.post('/:id/tree/root', passport.authenticate('jwt', {session: false}), as
 
     const response = await addRoot(id, newMember);
     if (response.statusCode !== 200) {
-        console.log(response.result);
         return res.status(response.statusCode).send(response.result);
     }
     return res.json(response.result);
@@ -136,10 +135,10 @@ router.post('/:id/tree/copy', passport.authenticate('jwt', {session: false}), as
     const sourceNodeId = req.body.source.nodeId;
     const treeOwnerId = req.body.source.treeOwnerId;
     const targetId = req.body.target.nodeId ;
-
+    
+    console.log("COPYING");
     const response = await performCopy(id, treeOwnerId, sourceNodeId, targetId);
     if (response.statusCode !== 200) {
-        console.log(response.result);
         return res.status(response.statusCode).send(response.result);
     }
     return res.json(response.result);

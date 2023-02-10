@@ -15,24 +15,6 @@ export const useAuthStore = defineStore('counter', () => {
     axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token.value}`;
   }
 
-    // axiosInstance.interceptors.response.use(config => {
-    //   console.log("Request intercepted");
-    //   console.log(config.status, config.isRepeated);
-    //   if (config.status === 401 && !config.isRepeated) {
-    //     console.log("Request 401, refreshing...");
-    //     refreshToken()
-    //       .then(res => {
-    //       console.log("Refresh success");
-    //         const token = res.data.token;
-    //         if (!token) return;
-    //         setToken(token);
-    //         config.isRepeated = true;
-    //         return axiosInstance.request(config);
-    //       });
-    //   }
-    //   return config;
-    // })
-
   function logout() {
     token.value = "";
     authenticated.value = false;
