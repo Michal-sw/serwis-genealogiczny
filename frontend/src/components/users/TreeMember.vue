@@ -3,7 +3,6 @@ import { ref, computed } from 'vue';
 import { useTreeStore } from '../../stores/tree';
 import { RouterLink } from 'vue-router';
 import { deleteMember } from '../../services/axiosService';
-import router from '../../router';
 import { useNotificationStore } from '../../stores/notifications';
 
 const props = defineProps({
@@ -15,12 +14,14 @@ const props = defineProps({
     branchLevel: Number
 });
 
+const treeStore = useTreeStore();
+
 const parents = computed(() => {
-    return useTreeStore().parentMap[props.id];
+    return treeStore.parentMap[props.id];
 })
 
 const isRoot = computed(() => {
-  return props.id === useTreeStore().realRootMember?.id
+  return props.id === treeStore.realRootMember?.id || props.id === treeStore.rootMember?.id;
 })
 
 const isAddMenuVisible = ref(false);
@@ -38,7 +39,7 @@ const vChangeAddMenuVisibility = {
 };
 
 function setAsRoot() {
-    useTreeStore().changeRoot({
+  treeStore.changeRoot({
         id: props.id,
         parents: props.parents,
         props: props.props,
@@ -47,10 +48,13 @@ function setAsRoot() {
 
 function onDelete() {
     const isSure = confirm("Are you sure?");
-    const isRoot = props.id === useTreeStore().realRootMember?.id
+    const isRoot = props.id === treeStore.realRootMember?.id || props.id === treeStore.rootMember?.id;
+    
     if (!isSure || isRoot) return;
-    deleteMember(useTreeStore().treeOwnerId, props.id)
-      .then(_res => router.go(0))
+    deleteMember(treeStore.treeOwnerId, props.id)
+      .then(_res => {
+        treeStore.refreshTree();
+      })
       .catch(_err => useNotificationStore().addError("Can not delete node!"));
 }
 

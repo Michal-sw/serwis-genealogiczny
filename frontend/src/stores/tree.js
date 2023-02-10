@@ -24,6 +24,16 @@ export const useTreeStore = defineStore('tree', () => {
             .catch(_err => useNotificationStore().addError("Could not get user tree!"));
     }
 
+    function refreshTree() {
+        getUserTreeById(treeOwnerId.value)
+            .then(res => {
+                createChildrenMap(res.data);
+                createParentMap(res.data);
+                changeRoot(rootMember.value);
+            })
+            .catch(_err => useNotificationStore().addError("Could not get user tree!"));
+    }
+
     function createChildrenMap(data) {
         childrenMap.value = data.reduce((prev, curr) => {
             return {
@@ -55,5 +65,5 @@ export const useTreeStore = defineStore('tree', () => {
         treeOwnerId.value = id;
     }
 
-    return { getAndSetTree, parentMap, rootChildren, rootMember, realRootMember, treeOwnerId, createChildrenMap, createParentMap, changeRoot, setRealRoot, setTreeOwnerId };
+    return { getAndSetTree, parentMap, rootChildren, rootMember, realRootMember, treeOwnerId, createChildrenMap, createParentMap, changeRoot, setRealRoot, setTreeOwnerId, refreshTree };
 })

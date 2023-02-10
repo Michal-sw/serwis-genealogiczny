@@ -20,7 +20,9 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <h2>User view</h2>
-    <div>ID {{ props.id }}</div>
-    <p>{{ user.login }}</p>
+    <div>
+        <h2>User view</h2>
+        <div>ID {{ props.id }}</div>
+        <p>{{ user.login }}</p>
+    </div>
 </template>

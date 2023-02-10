@@ -29,5 +29,7 @@ const props = defineProps({
 .user-view-wrapper {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    gap: 10px;
 }
 </style>

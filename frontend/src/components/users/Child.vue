@@ -26,7 +26,7 @@ function onDelete() {
     if (!isSure || isRoot) return;
     deleteMember(treeStore.treeOwnerId, props.child.id)
       .then(_res => {
-        treeStore.getAndSetTree(treeStore.treeOwnerId);
+        treeStore.refreshTree();
       })
       .catch(_err => useNotificationStore().addError("Can not delete node!"));
 }

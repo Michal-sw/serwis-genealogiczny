@@ -11,16 +11,21 @@ const props = defineProps({
 
 // const rerender = ref(0);
 
-const { rootMember } = storeToRefs(useTreeStore());
+const { rootMember, realRootMember } = storeToRefs(useTreeStore());
 
 onBeforeMount(() => {
     useTreeStore().getAndSetTree(props.id);
 })
 
+function goBackToRoot() {
+    useTreeStore().changeRoot(realRootMember.value);
+}
+
 </script>
 
 <template>
     <h2>User tree</h2>
+    <button class="info" @click="goBackToRoot">Go back to true Root</button>
     <div id="wrapper">
         <TreeMember
             :key="rootMember?.id"
@@ -36,6 +41,11 @@ onBeforeMount(() => {
 
 #wrapper {
     position: relative;
+}
+
+button {
+    width: fit-content;
+
 }
 
 </style>
