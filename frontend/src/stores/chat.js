@@ -1,8 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { getGlobalChat } from '../services/axiosService';
 import { createSocket } from '../services/websocketService';
-import  { useAuthStore } from './auth';
 
 export const useChatStore = defineStore('chat', () => {
     const chat = ref([]);
@@ -12,22 +10,28 @@ export const useChatStore = defineStore('chat', () => {
         socket.value = createSocket();
     }
 
-    function getAndSetChatHistory() {
-        getGlobalChat()
-            .then(res => {
-                console.log(res.data);
-                if (res.data.messages) {
-                    chat.value = res.data.messages;
-                }
-            })
+    // function getAndSetChatHistory() {
+    //     getGlobalChat()
+    //         .then(res => {
+    //             console.log(res.data);
+    //             if (res.data.messages) {
+    //                 chat.value = res.data.messages;
+    //             }
+    //         })
+    // }
+
+    function setHistory(data) {
+        chat.value = data;
     }
 
     function addMessage(message) {
-        const notification = { author: useAuthStore().user._id, text: message };
-        socket.value.
-        chat.value = [...chat.value, notification];
+        chat.value = [...chat.value, message];
+    }
+
+    function sendMesssage(data) {
+        socket.value.emit('message', data);
     }
 
 
-    return { chat, addMessage, getAndSetChatHistory, initWebsocket };
+    return { chat, addMessage, sendMesssage, setHistory, initWebsocket };
 })

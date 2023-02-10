@@ -1,30 +1,15 @@
-// const serverUrl = "ws://127.0.0.1:8080";
+import { io } from 'socket.io-client';
+import { useChatStore } from '../stores/chat';
 
 export function createSocket() {
-    console.log("Creating socket");
-    const socket = new WebSocket('wss://echo.websocket.org');
+    const socket = io('http://127.0.0.1:8080');
 
-    console.log()
-    socket.onopen = (event) => {
-        console.log(event);
-        console.log("Connected");
-    }
-
-    socket.onmessage = (event) => {
-        console.log(event);
-        console.log("Message!");
-    }
-
-    socket.addEventListener('open', _event => {
-        console.log("Open");
+    socket.on('chatHistory', data => {
+        useChatStore().setHistory(data);
     })
 
-    socket.addEventListener('connection', _event => {
-        console.log("Open");
-    })
-
-    socket.addEventListener('message', function (event) {
-        console.log('Message from server ', event.data);
+    socket.on('message', data => {
+        useChatStore().addMessage(data);
     });
 
     return socket;

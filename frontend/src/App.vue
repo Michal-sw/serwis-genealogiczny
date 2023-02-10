@@ -2,6 +2,7 @@
   import { RouterView } from 'vue-router'
   import NavBar from './components/NavBar.vue';
   import Notifications from './components/Notifications.vue';
+  import Chat from './components/Chat.vue';
   import { onBeforeMount } from 'vue';
   import { refreshToken } from './services/axiosService';
   import { useAuthStore } from './stores/auth';
@@ -27,6 +28,7 @@ import { useChatStore } from './stores/chat';
     <NavBar />
   <main>
     <RouterView/>
+    <Chat/>
   </main>
 </template>
 
