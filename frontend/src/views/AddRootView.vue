@@ -1,10 +1,12 @@
 <script setup>
 import { reactive } from 'vue';
 import { useNotificationStore } from '../stores/notifications';
-import { useTreeStore } from '../stores/tree';
 import { addRoot } from '../services/axiosService';
 import router from '../router';
-import { useAuthStore } from '../stores/auth';
+
+const props = defineProps({
+    id: String
+})
 
 const form = reactive({
     name: "",
@@ -27,7 +29,7 @@ function onSubmit(event) {
         name: form.name
     }
 
-    const userId = useAuthStore().user._id;
+    const userId = props.id;
 
     console.log(values);
     addRoot(userId, values)

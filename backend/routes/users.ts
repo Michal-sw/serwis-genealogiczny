@@ -124,6 +124,7 @@ router.post('/:id/tree/root', passport.authenticate('jwt', {session: false}), as
 
     const response = await addRoot(id, newMember);
     if (response.statusCode !== 200) {
+        console.log(response.result);
         return res.status(response.statusCode).send(response.result);
     }
     return res.json(response.result);

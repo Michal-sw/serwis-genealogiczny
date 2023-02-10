@@ -1,7 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { getUserTreeById } from '../services/axiosService';
-import { useNotificationStore } from './notifications';
 
 export const useTreeStore = defineStore('tree', () => {
     const treeOwnerId = ref("");
@@ -14,7 +13,7 @@ export const useTreeStore = defineStore('tree', () => {
     function getAndSetTree(id) {
         getUserTreeById(id)
             .then(res => {
-                const root = res.data.find(v => v.props.root);
+                const root = res.data.find(v => v.props.root || v.props.isRoot);
                 createChildrenMap(res.data);
                 createParentMap(res.data);
                 changeRoot(root);

@@ -68,7 +68,7 @@ export const addRoot = async (userId: string, newRoot: {name:String, birthDate:S
                     MATCH (tree:UserTree) 
                     WHERE tree.mongoID = "${userId}"
                     WITH tree
-                    MERGE (tree)<-[:IS_PART_OF]-(newRoot:TreeMember { name: ${newRoot.name}, birthDate: datetime("${newRoot.birthDate}", isRoot: true)})
+                    MERGE (tree)<-[:IS_PART_OF]-(newRoot:TreeMember { name: "${newRoot.name}", birthDate: datetime("${newRoot.birthDate}"), isRoot: true})
                 `))
             .then(res => {
                 return getCorrectObject(res);
@@ -149,10 +149,22 @@ export const getUserTreeMembersById = async (mongoId: string) => {
                             id: child.identity.toString(),
                             props: {...child.properties}
                         }))
-                    }) : null
-                }).filter(v => v !== null);
+                    }) : {
+                        id: result.parents[0].identity.toString(),
+                        props: {...result.parents[0].properties},
+                        parents:[],
+                        children:[],
+                        isFromNull: true
+                    }
+                })
+            
+                console.log(members);
+            const filteredMembers = members.length > 1 
+                ? members.filter(v => !v.isFromNull)
+                : members;
+                console.log(filteredMembers);
 
-            return getCorrectObject(members);
+            return getCorrectObject(filteredMembers);
         })
         .catch((err: Neo4jError) => getErrorObject(500, err.message))
         .finally(() => session.close())
