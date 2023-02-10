@@ -92,7 +92,12 @@ export const performCopy = async (userId: String, treeOwnerId: String, sourceNod
                     WITH targetNode, sourceNode
                     MATCH path = (sourceNode)-[:FATHER|MOTHER*]-(node: TreeMember)
                     WITH sourceNode, targetNode, COLLECT(path) as paths
-                    RETURN paths
+                    CALL apoc.refactor.cloneSubgraphFromPaths(paths, {
+                        standinNodes: [[sourceNode, targetNode]]
+                    }
+                    YIELD input, output, error
+                    MERGE (output)-[:IS_PART_OF]->(tree: UserTree { mongoID: "${userId}" })
+                    RETURN output
                 `))
             .then(res => {
                 return getCorrectObject(res);
