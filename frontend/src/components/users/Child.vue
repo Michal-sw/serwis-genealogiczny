@@ -2,9 +2,7 @@
 import { ref, computed } from 'vue';
 import { useTreeStore } from '../../stores/tree';
 import { useNotificationStore } from '../../stores/notifications';
-import router from '../../router';
 import { deleteMember } from '../../services/axiosService';
-import { storeToRefs } from 'pinia';
 
 const props = defineProps(['child']);
 

@@ -26,6 +26,10 @@ const logout = async () => {
   return axiosInstance.post(`/users/logout`);
 };
 
+const getGlobalChat = async () => {
+  return axiosInstance.get(`/chat`);
+}
+
 const searchUserByTreeMembers = async (input) => {
   const inputAsString = input.reduce((prev, curr) => prev ? `${prev},${curr}` : curr, "");
   return axiosInstance.get(`/users?treeMembers=${inputAsString}`);
@@ -53,6 +57,7 @@ export {
     login,
     signIn,
     logout,
+    getGlobalChat,
     searchUserByTreeMembers,
     getUserById,
     getUserTreeById,
