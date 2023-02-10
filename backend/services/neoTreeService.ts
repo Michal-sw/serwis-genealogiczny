@@ -79,6 +79,30 @@ export const addRoot = async (userId: string, newRoot: {name:String, birthDate:S
     return result;
 } 
 
+export const performCopy = async (userId: String, treeOwnerId: String, sourceNodeId: String, targetId: String) => {
+    const session = neoDriver.session();
+    const result = await neoDriver.session()
+        .executeWrite(tx =>
+                tx.run(`
+                    MATCH (targetNode: TreeMember)-[:IS_PART_OF]->(tree: UserTree { mongoID: "${userId}" }) 
+                    WHERE id(targetNode) = ${targetId}
+                    WITH targetNode
+                    MATCH (sourceNode: TreeMember)-[:IS_PART_OF]->(sourceTree: UserTree { mongoID: "${treeOwnerId}" }) 
+                    WHERE id(sourceNode) = ${sourceNodeId}
+                    WITH targetNode, sourceNode
+                    MATCH path = (sourceNode)-[:FATHER|MOTHER*]-(node: TreeMember)
+                    WITH sourceNode, targetNode, COLLECT(path) as paths
+                    RETURN paths
+                `))
+            .then(res => {
+                return getCorrectObject(res);
+            })
+            .catch((err: Neo4jError) => getErrorObject(500, err.message))
+            .finally(() => session.close());
+    
+    return result;
+} 
+
 const removeRoot = async (userId: String) => {
     const session = neoDriver.session();
     const result = await neoDriver.session()

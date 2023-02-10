@@ -131,6 +131,20 @@ router.post('/:id/tree/root', passport.authenticate('jwt', {session: false}), as
 
 })
 
+router.post('/:id/tree/copy', passport.authenticate('jwt', {session: false}), async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const sourceNodeId = req.body.source.nodeId;
+    const treeOwnerId = req.body.source.treeOwnerId;
+    const targetId = req.body.target.nodeId ;
+
+    const response = await performCopy(id, treeOwnerId, sourceNodeId, targetId);
+    if (response.statusCode !== 200) {
+        console.log(response.result);
+        return res.status(response.statusCode).send(response.result);
+    }
+    return res.json(response.result);
+})
+
 
 router.delete('/:id/tree/:memberId', passport.authenticate('jwt', {session: false}), async (req: Request, res: Response) => {
     const id = req.params.id;
