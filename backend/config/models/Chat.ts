@@ -6,7 +6,7 @@ export interface IChat {
     messages: MessageDT[]
 };
 
-const userSchema = new Schema<IChat>({
+const chatSchema = new Schema<IChat>({
     messages: [
         new Schema({
           author: {
@@ -23,4 +23,4 @@ const userSchema = new Schema<IChat>({
       ],
   });
 
-export default model('User', userSchema);
+export default model('Chat', chatSchema);

@@ -1,4 +1,5 @@
 import { Socket, Server } from 'socket.io';
+import { addMessage } from '../services/chatService';
 
 export const createWebsocketServer = (server) => {
     const io: Server = require('socket.io')(server, {
@@ -14,6 +15,7 @@ export const createWebsocketServer = (server) => {
 
         socket.on('message', async data => {
             io.emit('message', data)
+            addMessage(data);
         })
     })
     io.listen(8081);
