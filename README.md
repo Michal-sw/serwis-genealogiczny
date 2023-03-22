@@ -21,6 +21,10 @@ to access the app select "Sign in" and input random login and password
     - Neo4j for storing and managing family tree graphs
     - MongoDB for other data
 
-  3. Websockets:
+  4. Websockets:
     - socket-io
+    
+  5. Security:
+    - jwt refresh and access tokens
+    
 ```
